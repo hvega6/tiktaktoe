@@ -1,35 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div id="game-board"></div>
-    <div id="game-board">
-        <!-- Game board grid -->
-        <div class="row">
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-        </div>
-        <div class="row">
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-        </div>
-        <div class="row">
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-        </div>
-      
-        <!-- Player scores -->
-        <div>
-          <span id="player-x-score">Player X: 0</span>
-          <span id="player-o-score">Player O: 0</span>
-        </div>
-      </div>
-</body>
+<html>
+  <head>
+    <title>Twisted Tic-Tac-Toe</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+
+      th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Twisted Tic-Tac-Toe</h1>
+    <table id="game-board">
+      <tr>
+        <td id="cell1" class="cell"></td>
+        <td id="cell2" class="cell"></td>
+        <td id="cell3" class="cell"></td>
+      </tr>
+      <tr>
+        <td id="cell4" class="cell"></td>
+        <td id="cell5" class="cell"></td>
+        <td id="cell6" class="cell"></td>
+      </tr>
+      <tr>
+        <td id="cell7" class="cell"></td>
+        <td id="cell8" class="cell"></td>
+        <td id="cell9" class="cell"></td>
+      </tr>
+    </table>
+
+    <script>
+      const cells = document.querySelectorAll('.cell');
+      let currentPlayer = 'X';
+      let score = {
+        X: 0,
+        O: 0
+      };
+      let gameOver = false;
+
+      cells.forEach((cell) => {
+        cell.addEventListener('click', () => {
+          if (!gameOver && cell.textContent === '') {
+            placeMark(cell, currentPlayer);
+          }
+        });
+      });
+
+      function placeMark(cell, player) {
+        cell.textContent = player;
+        checkForWin();
+        updateScore();
+        switchPlayer();
+      }
+
+      function checkForWin() {
+        const winConditions = [
+          ['cell1', 'cell2', 'cell3'],
+          ['cell4', 'cell5', 'cell6'],
+          ['cell7', 'cell8', 'cell9'],
+          ['cell1', 'cell4', 'cell7'],
+          ['cell2', 'cell5', 'cell8'],
+          ['cell3', 'cell6', 'cell9'],
+          ['cell1', 'cell5', 'cell9'],
+          ['cell3', 'cell5', 'cell7']
+        ];
+
+        winConditions.forEach((condition) => {
+          const cells = condition.map((cellName) => document.querySelector(`#${cellName}`));
+          if (cells.every((cell) => cell.textContent !== '')) {
+            const winner = cells[0].textContent;
+            alert(`${winner} wins!`);
+            gameOver = true;
+          }
+        });
+      }
+
+      function updateScore() {
+        score[currentPlayer]++;
+        document.getElementById('score').innerText = `X: ${score.X}, O: ${score.O}`;
+      }
+
+      function switchPlayer() {
+        if (currentPlayer === 'X') {
+          currentPlayer = 'O';
+        } else {
+          currentPlayer = 'X';
+        }
+      }
+    </script>
+    <div id="score">Score: X: 0, O: 0</div>
+  </body>
 </html>

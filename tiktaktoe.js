@@ -1,5 +1,5 @@
 // Define the game board size
-const BOARD_SIZE = 5;
+const BOARD_SIZE = 7;
 
 // Get references to the game board and score elements
 const gameBoard = document.getElementById('game-board');
@@ -17,24 +17,19 @@ function createGameBoard() {
   for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
     const cell = document.createElement('div');
     cell.classList.add('game-cell');
+    cell.dataset.cellIndex = i;
     cell.addEventListener('click', handleCellClick);
     gameBoard.appendChild(cell);
   }
 }
 
-// Function to handle a cell click
+// Function to handle cell click
 function handleCellClick(event) {
-  const cell = event.target;
-  const index = Array.from(gameBoard.children).indexOf(cell);
-
-  // Check if the cell is empty and the game is not over
-  if (gameState[index] === null && !isGameOver()) {
-    // Place the current player's mark on the cell
-    cell.textContent = currentPlayer;
-    gameState[index] = currentPlayer;
-
-    // Check for a win or a tie
-    if (checkWin(currentPlayer)) {
+  const cellIndex = event.target.dataset.cellIndex;
+  if (gameState[cellIndex] === null) {
+    gameState[cellIndex] = currentPlayer === 'X' ? '"("")"' : '"("")"';
+    updateGameBoardDisplay();
+    if (checkForWin()) {
       updateScore(currentPlayer);
       alert(`Player ${currentPlayer} wins!`);
       resetGame();
@@ -42,33 +37,40 @@ function handleCellClick(event) {
       alert("It's a tie!");
       resetGame();
     } else {
-      // Switch to the other player's turn
       currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     }
   }
 }
 
-// Function to check if a player has won
-function checkWin(player) {
+// Function to update game board display
+function updateGameBoardDisplay() {
+  const cells = gameBoard.children;
+  for (let i = 0; i < cells.length; i++) {
+    cells[i].textContent = gameState[i] || '';
+  }
+}
+
+// Function to check for win
+function checkForWin() {
   // Check rows
   for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i += BOARD_SIZE) {
-    if (gameState.slice(i, i + BOARD_SIZE).every(mark => mark === player)) {
+    if (gameState.slice(i, i + BOARD_SIZE).every(mark => mark === (currentPlayer === 'X' ? '"("")"' : '"("")"'))) {
       return true;
     }
   }
 
   // Check columns
   for (let i = 0; i < BOARD_SIZE; i++) {
-    if (gameState.filter((_, index) => index % BOARD_SIZE === i).every(mark => mark === player)) {
+    if (gameState.filter((_, index) => index % BOARD_SIZE === i).every(mark => mark === (currentPlayer === 'X' ? '"("")"' : '"("")"'))) {
       return true;
     }
   }
 
   // Check diagonals
-  if (gameState.filter((_, index) => index % (BOARD_SIZE + 1) === 0).every(mark => mark === player)) {
+  if (gameState.filter((_, index) => index % (BOARD_SIZE + 1) === 0).every(mark => mark === (currentPlayer === 'X' ? '"("")"' : '"("")"'))) {
     return true;
   }
-  if (gameState.filter((_, index) => index % (BOARD_SIZE - 1) === 0 && index > 0 && index < BOARD_SIZE * BOARD_SIZE - 1).every(mark => mark === player)) {
+  if (gameState.filter((_, index) => index % (BOARD_SIZE - 1) === 0 && index > 0 && index < BOARD_SIZE * BOARD_SIZE - 1).every(mark => mark === (currentPlayer === 'X' ? '"("")"' : '"("")"'))) {
     return true;
   }
 
